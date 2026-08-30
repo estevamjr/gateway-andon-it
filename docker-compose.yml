@@ -1,0 +1,15 @@
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-gateway-proxy
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - SECONDARY_API_URL=http://host.docker.internal:5000
+      - GATEWAY_TIMEOUT=60
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
