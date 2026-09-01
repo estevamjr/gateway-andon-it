@@ -2,6 +2,26 @@
 
 Este repositório contém a **API Principal** do ecossistema Andon, operando sob o padrão de arquitetura de microsserviços. O sistema atua como um Proxy Reverso inteligente, orquestrando requisições de clientes para uma API Secundária e consumindo serviços externos de Inteligência Artificial para mitigação de incidentes.
 
+## 📊 Indicador de Aderência Arquitetural
+
+Este projeto adota um medidor próprio de aderência aos princípios modernos de engenharia de software, cultura DevOps e sistemas distribuídos.
+
+**Alta Aderência: Princípios Arquiteturais e Microsserviços**
+* **Coesão e Baixo Acoplamento:** O Gateway opera unicamente como Proxy Transparente na borda, isolando o Backend que concentra as regras de persistência e orquestração de IA.
+* **Cliente-Servidor e Independência de Interface:** O front-end atua apenas como *Client-Side ETL*, processando telemetria sem acoplamento topológico com o servidor[cite: 3].
+* **Padrão REST e RFC 9110:** Implementação estrita de semântica HTTP. O Gateway repassa dados sem mascaramento de erros (*Error Masking*), garantindo que status estruturais (400, 401) cheguem intactos ao cliente.
+
+**Alta Aderência: Qualidade, Segurança e DevSecOps**
+* **Integração de Testes (CI/CD):** O PyTest bloqueia a implantação caso a acurácia do modelo preditivo (SVM) caia abaixo do threshold de 80%[cite: 3].
+* **Segurança no Pipeline:** A telemetria é anonimizada (rótulos SENS-01) para conformidade com a LGPD/GDPR[cite: 3]. As transações são blindadas via JWT e o vazamento de chaves é prevenido no repositório via estratégia restrita de arquivos `.env.example`.
+
+**Média Aderência: Modelagem de Domínio e Operações**
+* **Gestão de Incidentes (Fix Forward):** O próprio produto materializa a cultura de operações contínuas ao prever falhas de hardware[cite: 3] e gerar mitigações autônomas via LLM em tempo real.
+* **Infraestrutura:** O encapsulamento é garantido via Docker, porém a orquestração avançada para auto-recuperação e escalabilidade horizontal (Kubernetes) segue mapeada como evolução futura no Roadmap MLOps[cite: 3].
+
+**Trade-offs (Padrões Não Aplicados)**
+* **GraphQL e RPC:** Omitidos intencionalmente. O protocolo REST síncrono atendeu integralmente aos requisitos de latência e integração entre os componentes deste MVP, evitando excesso de engenharia (*overengineering*).
+
 ## 🎯 RTM: Matriz de Rastreabilidade de Requisitos (MVP)
 Este projeto atende integralmente ao **Cenário 2.1** das diretrizes de Arquitetura de Software.
 
