@@ -1,0 +1,285 @@
+{
+  "info": {
+    "_postman_id": "2effa68a-0854-4a1f-9024-93b15785744c",
+    "name": "[estevamjr]: Andon IT",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "8869975",
+    "_collection_link": "https://go.postman.co/collection/8869975-2effa68a-0854-4a1f-9024-93b15785744c?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "POST auth/register",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"password123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/auth/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST auth/login",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"password123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST andon/analyze",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc4OTQyOTA3NSwianRpIjoiYmU3Zjk3YTctYzcyZi00Njk5LWIxMDYtZTY3MzBmZmU5YjkwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImRkNWYzNjFmLTJlNDUtNDZiNS05OGExLWE2MjUxZGFlYmZjMiIsIm5iZiI6MTc4OTQyOTA3NSwiY3NyZiI6IjQzZWI2OTk1LTNlMWEtNDdhYS1iMzhmLWQ2YTViMzJhMWI0YyIsImV4cCI6MTc4OTQyOTk3NX0.GPrkyKvlVi_rf5hHYdLPUnbRfRqjDrG7J4aDmzsjLYU",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"device_id\": \"SRV-TEST-01\",\r\n  \"cpu_usage_pct\": 98.2,\r\n  \"mem_available_gb\": 0.4,\r\n  \"active_threats\": 2,\r\n  \"untrusted_processes\": [\"xmrig\", \"nc_backdoor\"],\r\n  \"andon_status\": 2\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/andon/analyze",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "andon",
+            "analyze"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET logs",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc4OTQyOTA3NSwianRpIjoiYmU3Zjk3YTctYzcyZi00Njk5LWIxMDYtZTY3MzBmZmU5YjkwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImRkNWYzNjFmLTJlNDUtNDZiNS05OGExLWE2MjUxZGFlYmZjMiIsIm5iZiI6MTc4OTQyOTA3NSwiY3NyZiI6IjQzZWI2OTk1LTNlMWEtNDdhYS1iMzhmLWQ2YTViMzJhMWI0YyIsImV4cCI6MTc4OTQyOTk3NX0.GPrkyKvlVi_rf5hHYdLPUnbRfRqjDrG7J4aDmzsjLYU",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc4NzUyNDY5OSwianRpIjoiYjk4MjkzZWItZWM1Yi00Nzk1LWE3YTMtOWY1MjM1NTQ5NmRiIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImQzMWJlM2FiLTBjNjgtNDliNy1iY2RiLTVjYTFiMDdjMDE0ZiIsIm5iZiI6MTc4NzUyNDY5OSwiY3NyZiI6IjUwNzVkNGNjLTQ1N2UtNGVjNS05MWQwLTM4YWYyMGE2ZTE3MSIsImV4cCI6MTc4NzUyNTU5OX0.s1yPGP0AraGdcmFA7g--Ue5lChrHFxn_qbNoaRtDRdM",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/logs",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "logs"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET tickets",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc4OTQyOTA3NSwianRpIjoiYmU3Zjk3YTctYzcyZi00Njk5LWIxMDYtZTY3MzBmZmU5YjkwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImRkNWYzNjFmLTJlNDUtNDZiNS05OGExLWE2MjUxZGFlYmZjMiIsIm5iZiI6MTc4OTQyOTA3NSwiY3NyZiI6IjQzZWI2OTk1LTNlMWEtNDdhYS1iMzhmLWQ2YTViMzJhMWI0YyIsImV4cCI6MTc4OTQyOTk3NX0.GPrkyKvlVi_rf5hHYdLPUnbRfRqjDrG7J4aDmzsjLYU",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/tickets",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "tickets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT tickets/_ID_",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc4OTQyOTA3NSwianRpIjoiYmU3Zjk3YTctYzcyZi00Njk5LWIxMDYtZTY3MzBmZmU5YjkwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImRkNWYzNjFmLTJlNDUtNDZiNS05OGExLWE2MjUxZGFlYmZjMiIsIm5iZiI6MTc4OTQyOTA3NSwiY3NyZiI6IjQzZWI2OTk1LTNlMWEtNDdhYS1iMzhmLWQ2YTViMzJhMWI0YyIsImV4cCI6MTc4OTQyOTk3NX0.GPrkyKvlVi_rf5hHYdLPUnbRfRqjDrG7J4aDmzsjLYU",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n\"status\": \"done\",\r\n\"assignee_id\": \"estevam\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/tickets/e0d0cda5-8f5a-45cc-9a27-4932bc795473",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "tickets",
+            "e0d0cda5-8f5a-45cc-9a27-4932bc795473"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE tickets/_ID_",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc4OTQyOTA3NSwianRpIjoiYmU3Zjk3YTctYzcyZi00Njk5LWIxMDYtZTY3MzBmZmU5YjkwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImRkNWYzNjFmLTJlNDUtNDZiNS05OGExLWE2MjUxZGFlYmZjMiIsIm5iZiI6MTc4OTQyOTA3NSwiY3NyZiI6IjQzZWI2OTk1LTNlMWEtNDdhYS1iMzhmLWQ2YTViMzJhMWI0YyIsImV4cCI6MTc4OTQyOTk3NX0.GPrkyKvlVi_rf5hHYdLPUnbRfRqjDrG7J4aDmzsjLYU",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/tickets/e0d0cda5-8f5a-45cc-9a27-4932bc795473",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "tickets",
+            "e0d0cda5-8f5a-45cc-9a27-4932bc795473"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
