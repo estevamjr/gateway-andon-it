@@ -92,7 +92,7 @@ A API Principal estará orquestrando as requisições na porta **8080**.
 
 ### 3. Fluxo de Testes (Postman / Swagger)
 
-> 💡 **Dica:** Utilize a **Collection do Postman** anexada na entrega para importar todas as requisições já configuradas.
+> 💡 **Dica:** Utilize a **Collection do Postman** anexada na estrura deste projeto (arquivo: [estevamjr]- Andon IT.postman_collection.json).
 
 **Passo 1: Criar um Usuário**
 * **Endpoint:** `POST http://localhost:8080/api/v1/auth/register`
