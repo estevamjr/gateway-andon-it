@@ -30,7 +30,7 @@
           "host": [
             "localhost"
           ],
-          "port": "5000",
+          "port": "8080",
           "path": [
             "api",
             "v1",
@@ -64,7 +64,7 @@
           "host": [
             "localhost"
           ],
-          "port": "5000",
+          "port": "8080",
           "path": [
             "api",
             "v1",
