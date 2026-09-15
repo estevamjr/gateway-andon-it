@@ -1,26 +1,33 @@
 # 🛡️ Andon System: API Gateway (Módulo Principal)
 
-Este repositório contém a **API Principal** do ecossistema Andon, operando sob o padrão de arquitetura de microsserviços. O sistema atua como um Proxy Reverso inteligente, orquestrando requisições de clientes para uma API Secundária e consumindo serviços externos de Inteligência Artificial para mitigação de incidentes.
+Este repositório contém a **API Principal** do ecossistema Andon, operando sob o padrão de arquitetura de microsserviços. O sistema atua como um orquestrador e camada de governança inteligente, interceptando requisições de clientes para uma API Secundária e consumindo serviços externos de Inteligência Artificial para mitigação de incidentes.
 
-## 📊 Indicador de Aderência Arquitetural
+## 📊 Indicador de Aderência Arquitetural & 🏃‍♂️ Diretrizes de Gestão Ágil de Produtos e Projetos
 
 Este projeto adota um medidor próprio de aderência aos princípios modernos de engenharia de software, cultura DevOps e sistemas distribuídos.
 
 **Alta Aderência: Princípios Arquiteturais e Microsserviços**
-* **Coesão e Baixo Acoplamento:** O Gateway opera unicamente como Proxy Transparente na borda, isolando o Backend que concentra as regras de persistência e orquestração de IA.
-* **Cliente-Servidor e Independência de Interface:** O front-end atua apenas como *Client-Side ETL*, processando telemetria sem acoplamento topológico com o servidor[cite: 3].
-* **Padrão REST e RFC 9110:** Implementação estrita de semântica HTTP. O Gateway repassa dados sem mascaramento de erros (*Error Masking*), garantindo que status estruturais (400, 401) cheguem intactos ao cliente.
+* **Coesão e Baixo Acoplamento:** O Gateway opera como a única interface de contato na borda (*Single Point of Entry*), isolando o Backend que concentra as regras de persistência e orquestração de IA.
+* **Cliente-Servidor e Independência de Interface:** O front-end atua apenas como *Client-Side ETL*, processando telemetria sem acoplamento topológico com o servidor.
+* **Padrão REST e RFC 9110:** Implementação estrita de semântica HTTP. O Gateway atua como um escudo semântico, garantindo que erros estruturais (400, 401) cheguem intactos ao cliente sem mascaramento de exceções (*Error Masking*).
 
 **Alta Aderência: Qualidade, Segurança e DevSecOps**
-* **Integração de Testes (CI/CD):** O PyTest bloqueia a implantação caso a acurácia do modelo preditivo (SVM) caia abaixo do threshold de 80%[cite: 3].
-* **Segurança no Pipeline:** A telemetria é anonimizada (rótulos SENS-01) para conformidade com a LGPD/GDPR[cite: 3]. As transações são blindadas via JWT e o vazamento de chaves é prevenido no repositório via estratégia restrita de arquivos `.env.example`.
+* **Integração de Testes (CI/CD):** O PyTest bloqueia a implantação caso a acurácia do modelo preditivo (SVM) caia abaixo do threshold de 80%.
+* **Segurança no Pipeline:** A telemetria é anonimizada (rótulos SENS-01) para conformidade com a LGPD/GDPR. As transações são blindadas via JWT e o vazamento de chaves é prevenido no repositório via estratégia restrita de arquivos `.env.example`.
 
 **Média Aderência: Modelagem de Domínio e Operações**
-* **Gestão de Incidentes (Fix Forward):** O próprio produto materializa a cultura de operações contínuas ao prever falhas de hardware[cite: 3] e gerar mitigações autônomas via LLM em tempo real.
-* **Infraestrutura:** O encapsulamento é garantido via Docker, porém a orquestração avançada para auto-recuperação e escalabilidade horizontal (Kubernetes) segue mapeada como evolução futura no Roadmap MLOps[cite: 3].
+* **Gestão de Incidentes (Fix Forward):** O próprio produto materializa a cultura de operações contínuas ao prever falhas de hardware e gerar mitigações autônomas via LLM em tempo real.
+* **Infraestrutura:** O encapsulamento é garantido via Docker, porém a orquestração avançada para auto-recuperação e escalabilidade horizontal (Kubernetes) segue mapeada como evolução futura no Roadmap MLOps.
 
 **Trade-offs (Padrões Não Aplicados)**
 * **GraphQL e RPC:** Omitidos intencionalmente. O protocolo REST síncrono atendeu integralmente aos requisitos de latência e integração entre os componentes deste MVP, evitando excesso de engenharia (*overengineering*).
+
+O desenvolvimento deste microsserviço não foi guiado apenas por decisões técnicas, mas por uma forte cultura de **Gestão Ágil de Produto**, garantindo o alinhamento com as necessidades de negócio:
+
+* **Product Discovery e Foco no MVP:** A concepção do projeto utilizou dinâmicas de *Lean Inception* para delimitar claramente o Produto Mínimo Viável (MVP). O foco foi isolar as funcionalidades de maior valor (mitigação autônoma de incidentes via IA) com o menor custo computacional possível para validação (uso de SQLite para prova de conceito).
+* **Governança de Sprints e Backlog:** O escopo foi priorizado e fatiado em entregas incrementais. O backlog técnico (dívidas técnicas e infraestrutura) foi balanceado com o backlog de produto (regras de negócio da telemetria) iterativamente.
+* **Definition of Done (DoD) Estrito:** Um incremento só foi considerado "Pronto" ao atender critérios de aceite rigorosos: versionamento padronizado de rotas (`/v1/`), isolamento via Docker comprovado, segurança de tráfego por JWT operante e documentação atualizada e interativa disponível.
+* **Cultura DevOps (Shift-Left):** A integração das disciplinas de infraestrutura e gestão de projetos ocorreu desde o "dia zero". Problemas de configuração e *deploy* foram antecipados para o início do ciclo, reduzindo o tempo de *Go-To-Market* da prova de conceito.
 
 ## 🎯 RTM: Matriz de Rastreabilidade de Requisitos (MVP)
 Este projeto atende integralmente ao **Cenário 2.1** das diretrizes de Arquitetura de Software.
@@ -36,11 +43,16 @@ Este projeto atende integralmente ao **Cenário 2.1** das diretrizes de Arquitet
 ## 🏗️ Arquitetura e Padrões de Projeto
 
 O sistema rompe com a arquitetura monolítica legado para adotar a componentização de serviços:
-* **Proxy Transparente & Borda:** O Gateway centraliza a entrada (porta 8080) e intercepta os cabeçalhos de autorização.
+* **Gateway de Borda & Segurança:** O Gateway centraliza a entrada (porta 8080) e intercepta os cabeçalhos de autorização, atuando como controlador de acesso.
 * **Tratamento RFC 9110:** Implementa blindagem semântica. Erros estruturais ou falhas de autenticação são barrados na borda (ex: `401 Unauthorized`, `400 Bad Request`), impedindo o mascaramento de exceções (Erro 500) comuns em arquiteturas distribuídas.
 * **Desacoplamento Cognitivo:** A responsabilidade de gerar os planos de ação (playbooks) foi transferida para um modelo LLM externo, aliviando o processamento interno.
+* **Roteamento de Alta Fidelidade e Versionamento Estrito:** Para evitar ambiguidades de roteamento (*mismatch* de rotas 404), o Gateway atua com orquestração fiel. Em vez de suprimir (*strip*) o prefixo da URL internamente, a camada de roteamento foi refatorada para preservar e orquestrar a rota exata diretamente ao Backend, garantindo padronização universal do `/v1/`.
 
 ![Arquitetura Andon IT](./Andon%20IT%20-%20Autonomous%20Action.png)
+
+## ⚙️ Dívidas Técnicas (Tech Debts) e Governança
+* **Roteamento (Low Risk):** A constante de host `BACKEND_URL` presente na configuração principal funciona como *fallback*, sendo redundante em relação à inicialização dinâmica via variável de ambiente. A centralização dessa chamada está mapeada para a próxima iteração.
+* **Governança Git:** Para manter o histórico linear e evitar commits de mesclagem não intencionais em um ambiente distribuído, o padrão estabelecido para sincronização de repositório neste projeto é o uso estrito do `git pull --rebase`.
 
 ## 🌐 Consumo da API Externa
 
@@ -49,18 +61,17 @@ A mitigação automática de incidentes depende do consumo de uma API pública.
 * **Endpoint:** `POST https://openrouter.ai/api/v1/chat/completions`
 * **Licença de Uso:** Serviço gratuito (modelos *free tier*).
 
-*(Nota Ágil: A orquestração deste Gateway foi planejada via Lean Inception e estruturada com critérios de Definition of Done (DoD) estritos, garantindo que o software obedeça ao escopo desenhado nas Sprints de Governança).*
-
 ## 💻 Instruções de Instalação e Execução
 
-O projeto segue as melhores práticas de segurança (ausência de chaves hardcoded). Siga os passos para instanciar a aplicação:
+⚠️ **Pré-requisito Crítico:** Certifique-se de que o **Docker Desktop** (ou daemon do Docker) esteja em execução na sua máquina antes de iniciar os comandos abaixo.
 
 ### 1. Clonar e Configurar
 
     git clone https://github.com/estevamjr/gateway-andon-it.git
     cd gateway-andon-it
 
-Renomeie o arquivo de molde `app/.env.example` para `app/.env` e insira a chave da API do OpenRouter fornecida na entrega deste projeto:
+Renomeie o arquivo de molde `app/.env.example` para `app/.env`. 
+**Atenção:** A chave real da API do OpenRouter, a SECRET_KEY e a **Collection do Postman** para testes serão fornecidas diretamente na mensagem de publicação do portal da disciplina. Insira as chaves no seu arquivo `.env`:
 
     SECONDARY_API_URL=http://backend-andon:5000
     OPENROUTER_API_KEY=sua_chave_real_aqui
@@ -79,22 +90,30 @@ A arquitetura depende de uma rede virtual Docker para a comunicação entre o Ga
 
 A API Principal estará orquestrando as requisições na porta **8080**.
 
-### 3. Fluxo de Autenticação e Teste Local
-Para testar os serviços via Postman ou Insomnia, siga o fluxo de autenticação abaixo:
+### 3. Fluxo de Testes (Postman / Swagger)
+
+> 💡 **Dica:** Utilize a **Collection do Postman** anexada na entrega para importar todas as requisições já configuradas.
 
 **Passo 1: Criar um Usuário**
-* **Endpoint:** `POST http://localhost:8080/api/auth/register`
+* **Endpoint:** `POST http://localhost:8080/api/v1/auth/register`
 * **Payload (JSON):** `{"username": "admin", "password": "123"}`
 
 **Passo 2: Gerar o Token JWT**
-* **Endpoint:** `POST http://localhost:8080/api/auth/login`
+* **Endpoint:** `POST http://localhost:8080/api/v1/auth/login`
 * **Payload (JSON):** `{"username": "admin", "password": "123"}`
 * *Copie o `access_token` retornado no JSON.*
 
-**Passo 3: Acessar Rota Protegida (Ex: IA Andon)**
-* **Endpoint:** `POST http://localhost:8080/api/v1/telemetry/analyze`
-* **Header:** `Authorization: Bearer <seu_access_token_aqui>`
-* **Payload (JSON):** Envie os dados de telemetria para testar a mitigação via LLM.
+**Passo 3: Acessar Rotas Protegidas do CRUD (Requer Bearer Token)**
+Configure o Header com `Authorization: Bearer <seu_access_token>` e teste as rotas abaixo (conforme disponíveis na Collection):
+* **IA Andon (Criar Incidente):** `POST http://localhost:8080/api/v1/telemetry/analyze`
+* **Listar Tickets:** `GET http://localhost:8080/api/v1/tickets`
+* **Atualizar Ticket:** `PUT http://localhost:8080/api/v1/tickets/<ticket_id>`
+* **Deletar Ticket:** `DELETE http://localhost:8080/api/v1/tickets/<ticket_id>`
+* **Consultar Logs:** `GET http://localhost:8080/api/v1/logs`
 
-> **⚠️ Nota Técnica sobre o Requisito de API Gratuita:**
-> Embora a plataforma OpenRouter atenda ao requisito do escopo por oferecer modelos *free tier*, os testes de estresse na infraestrutura comprovaram que a latência extrema dessas opções gratuitas inviabiliza o tempo de resposta em tempo real exigido por um sistema Andon. A integração em produção consome um modelo pago, e **a chave fornecida na entrega possui saldo ativo**. O avaliador não precisará realizar cadastros ou lidar com falhas de *timeout*.
+**Passo 4: Acesso ao Swagger UI (Interface Interativa)**
+O Gateway expõe a documentação OpenAPI gerada pelo Backend de forma centralizada. Acesse pelo navegador:
+👉 `http://localhost:8080/apidocs/`
+
+> **⚠️ Nota Técnica sobre API Gratuita e Chaves Sensíveis:**
+> O consumo do OpenRouter atende ao requisito de IA do projeto (oferece modelos gratuitos). Contudo, testes de estresse comprovaram latência extrema nessas opções. Para garantir o tempo de resposta do Andon e evitar exposição de credenciais, **a chave real da API e a SECRET_KEY não estão versionadas no repositório. Elas possuem saldo ativo e estarão disponíveis exclusivamente na mensagem de publicação do portal**, junto com a Collection do Postman. O avaliador não precisará realizar cadastros.
