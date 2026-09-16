@@ -115,5 +115,104 @@ Configure o Header com `Authorization: Bearer <seu_access_token>` e teste as rot
 O Gateway expõe a documentação OpenAPI gerada pelo Backend de forma centralizada. Acesse pelo navegador:
 👉 `http://localhost:8080/apidocs/`
 
+## 🚀 Como Testar a Aplicação (Guia End-to-End Completo)
+
+Para testar todas as rotas da aplicação, você precisará registrar um usuário, gerar um Token de autenticação e inseri-lo no cabeçalho das requisições subsequentes. O fluxo simula o ciclo de vida real de um incidente e **as rotas são dependentes de estado**. O `ticket_id` gerado pela IA na etapa de análise será obrigatório para as etapas de atualização e deleção.
+
+### 🔐 Configurando a Autenticação (Swagger ou Postman)
+
+**Via Swagger UI:**
+1. Acesse `http://localhost:5000/apidocs/` no seu navegador.
+2. Execute o Registro e o Login (Passos 1 e 2 abaixo).
+3. Copie o valor do `"token"` retornado no Login.
+4. Suba até o topo da página, clique no botão **Authorize**, digite `Bearer ` (com um espaço) e cole o token. Clique em *Authorize* e feche. 
+
+**Via Postman:**
+1. Importe o arquivo da nossa Collection (`Andon_IT_Postman_Collection.json`).
+2. Execute o Registro e o Login (Passos 1 e 2 abaixo).
+3. Copie o `"token"` retornado no Login.
+4. Na aba **Authorization** de todas as outras rotas, certifique-se de que o tipo **Bearer Token** está selecionado e cole o valor.
+
+---
+
+### 🗺️ Fluxo de Execução Passo a Passo e Payloads
+
+#### Passo 1: Registro de Usuário (Register)
+Cria as credenciais para acesso ao sistema.
+* **Rota:** `POST /api/v1/auth/register`
+* **Body (JSON):**
+```json
+{
+  "username": "admin4",
+  "password": "password123"
+}
+```
+* **Resultado Esperado:** Status `201 Created` confirmando a criação do usuário.
+
+#### Passo 2: Autenticação (Login)
+* **Rota:** `POST /api/v1/auth/login`
+* **Body (JSON):** *(Mesmas credenciais criadas no Passo 1)*
+```json
+{
+  "username": "admin4",
+  "password": "password123"
+}
+```
+* **Ação Obrigatória:** Na resposta, copie o valor do `"token"` e configure a autorização (Bearer) conforme explicado no início desta seção. Sem isso, as próximas rotas retornarão erro de não autorizado (401).
+
+#### Passo 3: Análise de Telemetria (Ação Autônoma da IA)
+A IA analisa a telemetria, detecta a anomalia e aciona o LLM para gerar o plano de ação, abrindo o incidente.
+* **Rota:** `POST /api/v1/andon/analyze`
+* **Body (JSON):**
+```json
+{
+  "action_threats": 0,
+  "cpu_usage": 85.5,
+  "device_id": "servidor_borda_01",
+  "mac_address": "00:1B:44:11:3A:B7",
+  "ram_usage": 92.0,
+  "timestamp": "2026-09-15T22:00:00.000Z",
+  "untrusted_processes": 1
+}
+```
+* **Ação Obrigatória (CRÍTICO):** A resposta trará o plano de ação gerado. Localize no JSON de resposta o atributo **`ticket_id`** (Ex: `"ticket_id": "10a40dd8-be61-4c95-8bc6-00e0e80809cf"`). **Copie este ID exato** para utilizá-lo nos Passos 6, 7 e 8.
+
+#### Passo 4: Consultar Histórico da IA (Logs)
+Valida o histórico de processos e análises realizadas pela IA.
+* **Rota:** `GET /api/v1/logs`
+* **Como testar:** Nenhuma alteração na URL ou Body é necessária. Apenas execute.
+* **Resultado Esperado:** Retorna a lista completa com o histórico de logs processados pelo sistema.
+
+#### Passo 5: Listar Todos os Incidentes (Tickets)
+Valida a persistência dos tickets criados.
+* **Rota:** `GET /api/v1/tickets`
+* **Como testar:** Nenhuma alteração na URL ou Body é necessária.
+* **Resultado Esperado:** Retorna a lista de todos os incidentes (Kanban tickets) abertos no banco de dados.
+
+#### Passo 6: Atualizar o Incidente (Update)
+Simula a intervenção humana atualizando o status do ticket.
+* **Rota:** `PUT /api/v1/tickets/{ticket_id}`
+* **Como testar:** Substitua `{ticket_id}` na URL pelo ID copiado no Passo 3.
+* **Body (JSON):**
+```json
+{
+  "assignee_id": "estevamjr",
+  "status": "valid"
+}
+```
+* **Resultado Esperado:** Status `200 OK` confirmando a atualização do estado no banco.
+
+#### Passo 7: Encerrar o Incidente (Delete)
+Finaliza o ciclo removendo fisicamente o ticket.
+* **Rota:** `DELETE /api/v1/tickets/{ticket_id}`
+* **Como testar:** Insira o mesmo `{ticket_id}` na URL. Nenhum Body é necessário.
+* **Resultado Esperado:** Status `200 OK` e a mensagem de que o ticket foi deletado com sucesso.
+
+#### Passo 8: Prova Real de Deleção (Verify)
+Garante que o registro não existe mais no banco de dados.
+* **Rota:** `GET /api/v1/tickets/{ticket_id}` *(No Postman, utilize a mesma rota da listagem, mas adicione o ID na URL)*.
+* **Como testar:** Insira o `{ticket_id}` deletado na URL.
+* **Resultado Esperado:** A aplicação deve retornar **Status 404 (Not Found)** e a mensagem `"Ticket não encontrado"`, provando que a deleção do Passo 7 foi efetivada com sucesso.
+* 
 > **⚠️ Nota Técnica sobre API Gratuita e Chaves Sensíveis:**
 > O consumo do OpenRouter atende ao requisito de IA do projeto (oferece modelos gratuitos). Contudo, testes de estresse comprovaram latência extrema nessas opções. Para garantir o tempo de resposta do Andon e evitar exposição de credenciais, **a chave real da API e a SECRET_KEY não estão versionadas no repositório. Elas possuem saldo ativo e estarão disponíveis exclusivamente na mensagem de publicação do portal**, junto com a Collection do Postman. O avaliador não precisará realizar cadastros.
