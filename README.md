@@ -68,7 +68,7 @@ A mitigação automática de incidentes depende do consumo de uma API pública.
 ### 1. Clonar e Configurar
 
 ```bash
-git clone [https://github.com/estevamjr/gateway-andon-it.git](https://github.com/estevamjr/gateway-andon-it.git)
+git clone https://github.com/estevamjr/gateway-andon-it.git
 cd gateway-andon-it
 cp .env.example .env
 ```
