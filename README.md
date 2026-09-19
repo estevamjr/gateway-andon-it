@@ -2,8 +2,6 @@
 
 Este repositório contém a **API Principal** do ecossistema Andon, operando sob o padrão de arquitetura de microsserviços. O sistema atua como um orquestrador e camada de governança inteligente, interceptando requisições de clientes para uma API Secundária e consumindo serviços externos de Inteligência Artificial para mitigação de incidentes.
 
-![Arquitetura Andon IT](./Andon%20IT%20-%20Autonomous%20Action.png)
-
 ## 📊 Indicador de Aderência Arquitetural & 🏃‍♂️ Diretrizes de Gestão Ágil de Produtos e Projetos
 
 Este projeto adota um medidor próprio de aderência aos princípios modernos de engenharia de software, cultura DevOps e sistemas distribuídos.
