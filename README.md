@@ -2,6 +2,8 @@
 
 Este repositório contém a **API Principal** do ecossistema Andon, operando sob o padrão de arquitetura de microsserviços. O sistema atua como um orquestrador e camada de governança inteligente, interceptando requisições de clientes para uma API Secundária e consumindo serviços externos de Inteligência Artificial para mitigação de incidentes.
 
+![Arquitetura Andon IT](./Andon%20IT%20-%20Autonomous%20Action.png)
+
 ## 📊 Indicador de Aderência Arquitetural & 🏃‍♂️ Diretrizes de Gestão Ágil de Produtos e Projetos
 
 Este projeto adota um medidor próprio de aderência aos princípios modernos de engenharia de software, cultura DevOps e sistemas distribuídos.
@@ -67,26 +69,33 @@ A mitigação automática de incidentes depende do consumo de uma API pública.
 
 ### 1. Clonar e Configurar
 
-    git clone https://github.com/estevamjr/gateway-andon-it.git
-    cd gateway-andon-it
+```bash
+git clone [https://github.com/estevamjr/gateway-andon-it.git](https://github.com/estevamjr/gateway-andon-it.git)
+cd gateway-andon-it
+cp .env.example .env
+```
 
-Renomeie o arquivo de molde `app/.env.example` para `app/.env`. 
-**Atenção:** A chave real da API do OpenRouter, a SECRET_KEY e a **Collection do Postman** para testes serão fornecidas diretamente na mensagem de publicação do portal da disciplina. Insira as chaves no seu arquivo `.env`:
+**Atenção Máxima:** Como o Gateway atua **apenas como roteador**, o arquivo `.env` do Gateway **NÃO deve conter chaves de IA**. Ele precisa conter estritamente a URL de comunicação com o Backend. Insira a variável abaixo no seu arquivo `.env`:
 
-    SECONDARY_API_URL=http://backend-andon:5000
-    OPENROUTER_API_KEY=sua_chave_real_aqui
+```env
+SECONDARY_API_URL=http://backend-andon:5000
+```
 
 ### 2. Subindo a Arquitetura (Docker Manual)
 A arquitetura depende de uma rede virtual Docker para a comunicação entre o Gateway e o Backend. Abra o terminal e execute os passos abaixo na ordem:
 
 **A. Crie a rede interna (caso ainda não exista):**
 
-    docker network create andon-net
+```bash
+docker network create andon-net
+```
 
 **B. Construa a imagem e suba o container do Gateway:**
 
-    docker build -t andon-gateway .
-    docker run -d --name andon-gateway --network andon-net -p 8080:8080 --env-file app/.env andon-gateway
+```bash
+docker build -t andon-gateway .
+docker run -d --name andon-gateway --network andon-net -p 8080:8080 --env-file .env andon-gateway
+```
 
 A API Principal estará orquestrando as requisições na porta **8080**.
 
@@ -213,6 +222,6 @@ Garante que o registro não existe mais no banco de dados.
 * **Rota:** `GET /api/v1/tickets/{ticket_id}` *(No Postman, utilize a mesma rota da listagem, mas adicione o ID na URL)*.
 * **Como testar:** Insira o `{ticket_id}` deletado na URL.
 * **Resultado Esperado:** A aplicação deve retornar **Status 404 (Not Found)** e a mensagem `"Ticket não encontrado"`, provando que a deleção do Passo 7 foi efetivada com sucesso.
-* 
+
 > **⚠️ Nota Técnica sobre API Gratuita e Chaves Sensíveis:**
 > O consumo do OpenRouter atende ao requisito de IA do projeto (oferece modelos gratuitos). Contudo, testes de estresse comprovaram latência extrema nessas opções. Para garantir o tempo de resposta do Andon e evitar exposição de credenciais, **a chave real da API e a SECRET_KEY não estão versionadas no repositório. Elas possuem saldo ativo e estarão disponíveis exclusivamente na mensagem de publicação do portal**, junto com a Collection do Postman. O avaliador não precisará realizar cadastros.
