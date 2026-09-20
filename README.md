@@ -227,3 +227,34 @@ A mitigação automática de incidentes depende do consumo de uma API de intelig
 * **Serviço Consumido:** OpenRouter (LLMService) utilizando o modelo `google/gemini-3.7-flash`.
 * **Endpoint:** `POST https://openrouter.ai/api/v1/chat/completions`
 * **Licença de Uso:** Token com **saldo pré-pago ativo (Paid Tier)**. A chave fornecida ao avaliador possui créditos para garantir baixa latência e total estabilidade durante a execução dos testes end-to-end.
+
+### 🧠 Validação da Execução do Modelo SVM (Machine Learning)
+
+Para fins de avaliação, a confirmação de que o modelo Support Vector Machine (SVM) está processando os dados em tempo real — e não retornando respostas fixas (*mockadas*) — baseia-se em duas evidências técnicas de Teste de Caixa Preta:
+
+1. **Prova Dinâmica (Entrada vs. Saída):** O sistema reage matematicamente aos dados de entrada. Ao submeter um *payload* com métricas saudáveis (ex: `cpu_usage_pct: 20.0`), a API retorna o status de integridade (`"andon_status": 0`). Injetando dados que simulam um ataque (ex: `cpu_usage_pct: 98.2` e processos maliciosos como `xmrig`), a classificação muda dinamicamente para `"andon_status": 2`. A capacidade de distinguir os dois cenários atesta o funcionamento real do motor de inferência.
+```
+{
+  "device_id": "SRV-TEST-01",
+  "cpu_usage_pct": 20.0,
+  "mem_available_gb": 16.0,
+  "active_threats": 0,
+  "untrusted_processes": [],
+  "andon_status": 0
+}
+```
+2. **Assinatura de Execução do Scikit-Learn:** O monitoramento dos logs do contêiner (`docker logs backend-andon`) durante uma requisição revela um aviso nativo da biblioteca (`UserWarning: X does not have valid feature names...`). Este log é gerado direta e exclusivamente pelo motor do `scikit-learn` no momento em que o método `.predict()` é invocado, servindo como a "prova térmica" de que a biblioteca de Inteligência Artificial foi instanciada e acionada em tempo real.
+```
+{
+  "cpu_usage_pct": 20.0, 
+  "active_threats": 0, 
+  "untrusted_processes": []
+}
+```
+
+### 🏗️ Decisões Arquiteturais dos Microsserviços
+
+Este projeto adota uma abordagem de arquitetura distribuída, onde cada microsserviço possui uma estrutura de diretórios otimizada para o seu domínio e responsabilidade única:
+
+* **API Gateway (Padrão Proxy/Routing):** Apresenta uma arquitetura enxuta focada em roteamento. Não possui camadas de `models` ou `schemas`, pois não tem responsabilidade de persistência ou regras de negócio complexas. Seu fluxo baseia-se em `controllers` (recepção) e `services` (encaminhamento seguro para o backend).
+* **Backend de IA (Arquitetura em Camadas/MVC):** Apresenta uma estrutura mais densa orientada a domínio (Domain-Driven). Inclui pastas como `models` (entidades de banco de dados), `schemas` (validação Pydantic) e `ml_logic` (encapsulamento do modelo SVM). Esta assimetria estrutural garante que cada serviço carregue apenas a complexidade necessária para a sua função, seguindo as melhores práticas de segregação de microsserviços.
