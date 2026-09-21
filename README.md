@@ -4,7 +4,7 @@ Este repositório centraliza a documentação da aplicação, operando sob o pad
 * **API Gateway (Módulo Principal):** Atua como um orquestrador e camada de governança inteligente na borda, interceptando requisições (Porta 8080).
 * **Ticket-Andon-IT (API Secundária):** Responsável por toda a persistência de dados (I/O), processamento de regras de negócios complexas e classificação de telemetria via algoritmos de Machine Learning (SVM) (Porta 5000).
 
----
+
 
 ## 💻 Instruções de Instalação e Execução
 
@@ -68,8 +68,6 @@ Construa a imagem e suba o container do Gateway:
 docker build -t andon-gateway .
 docker run -d --name andon-gateway --network andon-net -p 8080:8080 --env-file .env andon-gateway
 ```
-
----
 
 ## 🚀 Como Testar a Aplicação (Guia End-to-End Completo)
 
@@ -157,8 +155,6 @@ Garante que o registro não existe mais no banco de dados.
 > **⚠️ Nota Técnica sobre API Gratuita e Chaves Sensíveis:**
 > O consumo do OpenRouter atende ao requisito de IA do projeto. Contudo, testes de estresse comprovaram latência extrema nas opções de *free tier*. Para garantir o tempo de resposta do Andon e a estabilidade da avaliação, **a chave real da API não está versionada no repositório, mas possui saldo pré-pago ativo**. Ela estará disponível exclusivamente na mensagem de publicação do portal.
 
----
-
 ![Arquitetura Andon IT](./Andon%20IT%20-%20Autonomous%20Action.png)
 
 ## 🏗️ Arquitetura e Padrões de Projeto
@@ -180,6 +176,13 @@ A separação deste módulo permitiu escalar a persistência e a lógica pesada 
 * **Dívida Técnica (DevOps):** A atual assimetria na orquestração (Gateway via Compose vs. Backend via CLI) foi adotada para facilitar testes isolados. O plano futuro prevê um repositório guarda-chuva com um `docker-compose.yml` global.
 * **Roteamento (Low Risk):** A constante de host `BACKEND_URL` presente na configuração principal funciona como *fallback*, sendo redundante em relação à inicialização dinâmica via variável de ambiente. A centralização dessa chamada está mapeada para a próxima iteração.
 * **Governança Git:** Para manter o histórico linear e evitar commits de mesclagem não intencionais em um ambiente distribuído, o padrão estabelecido para sincronização de repositório neste projeto é o uso estrito do `git pull --rebase`.
+
+### 🏗️ Decisões Arquiteturais dos Microsserviços
+
+Este projeto adota uma abordagem de arquitetura distribuída, onde cada microsserviço possui uma estrutura de diretórios otimizada para o seu domínio e responsabilidade única:
+
+* **API Gateway (Padrão Proxy/Routing):** Apresenta uma arquitetura enxuta focada em roteamento. Não possui camadas de `models` ou `schemas`, pois não tem responsabilidade de persistência ou regras de negócio complexas. Seu fluxo baseia-se em `controllers` (recepção) e `services` (encaminhamento seguro para o backend).
+* **Backend de IA (Arquitetura em Camadas/MVC):** Apresenta uma estrutura mais densa orientada a domínio (Domain-Driven). Inclui pastas como `models` (entidades de banco de dados), `schemas` (validação Pydantic) e `ml_logic` (encapsulamento do modelo SVM). Esta assimetria estrutural garante que cada serviço carregue apenas a complexidade necessária para a sua função, seguindo as melhores práticas de segregação de microsserviços (abordagem que foi fundamental para a refatoração e uso nesta entrega).
 
 ## 📊 Indicador de Aderência Arquitetural & 🏃‍♂️ Diretrizes de Gestão Ágil de Produtos e Projetos
 
@@ -252,9 +255,3 @@ Para fins de avaliação, a confirmação de que o modelo Support Vector Machine
 }
 ```
 
-### 🏗️ Decisões Arquiteturais dos Microsserviços
-
-Este projeto adota uma abordagem de arquitetura distribuída, onde cada microsserviço possui uma estrutura de diretórios otimizada para o seu domínio e responsabilidade única:
-
-* **API Gateway (Padrão Proxy/Routing):** Apresenta uma arquitetura enxuta focada em roteamento. Não possui camadas de `models` ou `schemas`, pois não tem responsabilidade de persistência ou regras de negócio complexas. Seu fluxo baseia-se em `controllers` (recepção) e `services` (encaminhamento seguro para o backend).
-* **Backend de IA (Arquitetura em Camadas/MVC):** Apresenta uma estrutura mais densa orientada a domínio (Domain-Driven). Inclui pastas como `models` (entidades de banco de dados), `schemas` (validação Pydantic) e `ml_logic` (encapsulamento do modelo SVM). Esta assimetria estrutural garante que cada serviço carregue apenas a complexidade necessária para a sua função, seguindo as melhores práticas de segregação de microsserviços.
